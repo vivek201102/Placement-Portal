@@ -46,6 +46,22 @@ const StudentStat = () => {
         console.log(err);
       })
 
+      await axios.get( apis.getOffersCount, {headers: { Authorization: token }})
+          .then((res) => {
+            rows.push({title: "No of offers", detail: res.data })
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+
+      await axios.get( apis.getHighestOfferAmount, {headers: { Authorization: token }})
+          .then((res) => {
+            rows.push({title: "Highest Offer Amount", detail: res.data })
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+
       setData(rows)
     }
 

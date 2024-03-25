@@ -218,7 +218,31 @@ const DriveDetail = () => {
                                 {
                                     parseInt(driveDetail.ctc) >= (offer.offerAmount * 1.5)
                                     ?
-                                    <Button variant="contained" sx={{ background: '#910A67', marginY: 5, marginRight:3, ":hover": { bgcolor: "#720455" } }}>You can apply for drive</Button>
+                                    applicationStatus == "APPLIED" ?
+                                    <Button variant="contained" 
+                                    sx={{ 
+                                        background: '#910A67', 
+                                        marginY: 5, marginRight:3, 
+                                        ":hover": { 
+                                            bgcolor: "#720455" 
+                                        } }}
+                                        onClick={deleteApplication}
+                                        >
+                                        Withdraw Application
+                                    </Button>
+                                    :
+                                    <Button variant="contained" 
+                                        sx={{ 
+                                            background: '#910A67', 
+                                            marginY: 5, marginRight:3, 
+                                            ":hover": { 
+                                                bgcolor: "#720455" 
+                                            } }}
+                                        onClick={() => { 
+                                            applyForDrive("PLACED")
+                                        }}    
+                                        >
+                                                You can apply for drive</Button>
                                     :
                                     <></>
                                 }

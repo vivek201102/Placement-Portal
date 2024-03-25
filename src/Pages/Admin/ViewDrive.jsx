@@ -64,7 +64,8 @@ const ViewDrive = () => {
         console.log(placedInfo);
         axios.post(apis.placeStudents, {"offers": placedInfo, "placementDriveId": id}, {headers: {Authorization: token}})
         .then((res) => {
-            console.log(res.data);
+            setOpen(false)
+            window.history.back()
         })
         .catch((err) => {
             console.log(err);
@@ -132,8 +133,9 @@ const ViewDrive = () => {
 
         axios.get(`${apis.getDriveApplication}/${id}`, { headers: { Authorization: token } })
             .then((res) => {
-                console.log(res.data);
-                const data = res.data.map(item => item.student);
+                // console.log(res.data);
+                let data = res.data.map(item => item.student);
+                data = data.map(item => ({...item, placed: false}));
                 console.log(data);
                 setRow(data)
             })

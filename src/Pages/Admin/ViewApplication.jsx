@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from '@mui/material'
+import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
@@ -8,11 +8,13 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import CheckCircleIcon  from '@mui/icons-material/CheckCircle';
 import CancelIcon from "@mui/icons-material/Cancel"
 import { toast } from 'react-toastify';
+import Row from './Row';
 const ViewApplication = () => {
     const navigate = useNavigate();
     const [change, setChange] = useState(false)
     const [rows, setRows] = useState([])
     const token = localStorage.getItem("token")
+    const [placedApplications, setPlacedApplications] = useState([])
 
     useEffect(() => {
         axios.get(apis.getAllPendingApplications, 
@@ -35,6 +37,15 @@ const ViewApplication = () => {
             .catch((err) => {
                 console.log(err);
             })
+
+        axios.get(apis.getAllPlacedStudentApplications, { headers: { Authorization: token }})
+        .then((res) => {
+            console.log(res.data);
+            setPlacedApplications(res.data)
+        })
+        .catch((err) => {
+            console.log(err);
+        })
     }, [change])
 
     const approve = (id) => {
@@ -61,74 +72,6 @@ const ViewApplication = () => {
         })
     }
 
-    const placedColumns = [
-        { field: 'id', headerName: 'ID', width: 120 },
-        {
-            field: 'studentId',
-            headerName: 'Student ID',
-            width: 250,
-        },
-        {
-            field: 'View Student',
-            headerName: 'View Student',
-            width: 150,
-            renderCell: (param) => (
-                <VisibilityIcon sx={{ color: 'blue', cursor: 'pointer' }}
-                    onClick={() => { navigate('/admin/student/' + param.row.studentId) }}
-                />
-            )
-        },
-        {
-            field: 'driveId',
-            headerName: 'Placement Drive ID',
-            type: 'string',
-            width: 200,
-            editable: true,
-        },
-        {
-            field: 'companyName',
-            headerName: 'Company Name',
-            type: 'string',
-            width: 250,
-        },
-        {
-            field: 'View Drive',
-            headerName: 'View Drive',
-            width: 150,
-            renderCell: (param) => (
-                <VisibilityIcon sx={{ color: 'blue', cursor: 'pointer' }}
-                    onClick={() => { navigate('/admin/drive/edit/' + param.row.driveId) }}
-                />
-            )
-        },
-
-        {
-            field: 'Actions',
-            headerName: 'Actions',
-            renderCell: (param) => (
-                param.row.status === "APPLIED" ?
-                    <div>
-                        <Button variant="contained" startIcon={<CheckCircleIcon />} sx={{ backgroundColor: "#3C0753", marginRight: 2, ":hover": { bgcolor: "#030637" } }}
-                            onClick={() => {
-                                approve(param.row.id)
-                            }}>Approve</Button>
-                        <Button variant="contained" startIcon={<CancelIcon />} sx={{ backgroundColor: "#D0312D", marginX: 2, ":hover": { bgcolor: "#990F02" } }} 
-                        onClick={() => {
-                            reject(param.row.id)
-                        }}>Reject</Button>
-                    </div>
-                    :
-                    <div>
-                        <Button variant="contained" sx={{ backgroundColor: "#D0312D", marginX: 2, ":hover": { bgcolor: "#990F02" } }} disabled>APPROVED</Button>
-                    </div>
-            ),
-            width: 300
-        },
-        {
-            field: "Offers",
-            headerName: "Offers"
-        }
-    ]
 
     const columns = [
         { field: 'id', headerName: 'ID', width: 120 },
@@ -225,6 +168,31 @@ const ViewApplication = () => {
                 pageSizeOptions={[5]}
                 disableRowSelectionOnClick
             />
+
+            <Typography variant='h5' sx={{ fontWeight: "bold", textAlign: "center", marginY: 5 }}>
+                Pending Approval of Placed Students
+            </Typography>
+            <TableContainer component={Paper}>
+                <Table aria-label="collapsible table">
+                    <TableHead>
+                        <TableCell />
+                        <TableCell>Student ID</TableCell>
+                        <TableCell>First Name</TableCell>
+                        <TableCell>Last Name</TableCell>
+                        <TableCell>View Student</TableCell>
+                        <TableCell>Company Name</TableCell>
+                        <TableCell>View Drive</TableCell>
+                        <TableCell>Actions</TableCell>
+                    </TableHead>
+                    <TableBody>
+                        {
+                            placedApplications.map((item, index) => (
+                                <Row row={item} approve={approve} reject={reject}/>
+                            ))
+                        }
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </Box>
     )
 }

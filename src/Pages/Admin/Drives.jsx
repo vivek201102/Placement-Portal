@@ -9,10 +9,11 @@ import { DataGrid } from '@mui/x-data-grid'
 import axios from 'axios'
 import apis from '../../apis'
 import { toast } from 'react-toastify'
+import PlacementReport from './PlacementReport'
 
 const Drives = () => {
     const theme = createTheme();
-    const [data, setData] = useState([])
+
     const navigate = useNavigate()
     const [currentDrives, setCurrentDrives] = useState([])
     const [unfinished, setUnfinished] = useState([])
@@ -24,19 +25,9 @@ const Drives = () => {
     const [loading, setLoading] = useState(false)
     const [alertOpen, setAlertOpen] = useState(false)
     const [id, setId] = useState()
-
+    const [reportOpen, setReportOpen] = useState(false)
 
     useEffect(() => {
-        axios.get(apis.getAllDrive,
-            { headers: { Authorization: token } })
-            .then((res) => {
-                setData(res.data)
-                // console.log(res.data);
-            })
-            .catch((err) => {
-                console.log(err);
-            })
-
         axios.get(apis.getUnfinished, { headers: { Authorization: token }})
         .then((res) => {
             setUnfinished(res.data)
@@ -131,7 +122,8 @@ const Drives = () => {
             width: 200,
             renderCell: (param) => (
                 <Button variant='contained' sx={{ background: '#3C0753', ":hover": { bgcolor: "#3C0753" } }}
-                    onClick={() => {
+                    onClick={(e) => {
+                        e.stopPropagation()
                         setSelectedDrive(param.row.id)
                         setOpen(true)
                     }}
@@ -235,9 +227,11 @@ const Drives = () => {
             width: 200,
             renderCell: (param) => (
                 <Button variant='contained' sx={{ background: '#3C0753', ":hover": { bgcolor: "#3C0753" } }}
-                    onClick={() => {
-                        setSelectedDrive(param.row.id)
-                        setOpen(true)
+                    onClick={(e) => {
+                        e.stopPropagation()
+                        setSelectedDrive(param.row)
+                        openReport(param.row.id)
+                        console.log(param.row.id);
                     }}
                 >Generate Report</Button>
             )
@@ -249,6 +243,17 @@ const Drives = () => {
         setId(id)
         setAlertOpen(true)
     }
+
+    const openReport = (id) => {
+        setId(id)
+        setReportOpen(true)
+    }
+
+    const closeReport = () => {
+        setId()
+        setReportOpen(false)
+    }
+
 
     const deletePlacementDrive = async () => {
         setLoading(true)
@@ -283,6 +288,36 @@ const Drives = () => {
 
     return (
         <ThemeProvider theme={theme}>
+
+            <Dialog
+                open={reportOpen}
+                maxWidth="lg"
+                fullWidth
+            >
+                <DialogTitle>
+                    <Typography variant="h5" fontWeight="bold">
+                        {
+                            selectedDrive ? selectedDrive.companyName : null
+                        }
+                    </Typography>
+                </DialogTitle>
+                <DialogContent>
+                    <PlacementReport placementDrive={selectedDrive}/>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        variant="contained"
+                        sx={{ background: '#910A67', ":hover": { bgcolor: "#910A67" } }}
+                        onClick={closeReport}>Cancel</Button>
+                    <Button
+                        variant="contained"
+                        sx={{ background: '#910A67', ":hover": { bgcolor: "#910A67" } }}
+                        onClick={() => { window.print() }}
+                        >
+                        Print
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
             <Dialog
                 open={alertOpen}
