@@ -26,7 +26,7 @@ public class PlacementDriveStudentController {
     @GetMapping("/get-drives")
     public ResponseEntity<?> getAll(){
         try{
-            return ResponseEntity.ok(placementDriveService.getAll());
+            return ResponseEntity.ok(placementDriveService.getAllCurrent());
         }
         catch (Exception e){
             return ResponseEntity.internalServerError().body(e.getMessage());

@@ -8,4 +8,7 @@ import java.util.List;
 public interface PlacedStudentService {
     public void register(PlacedStudentRequest request);
     public List<PlacedStudent> getStudentOffer(String studentId);
+    public List<PlacedStudent> getOffersByCompany(int driveId);
+    public List<PlacedStudent> getAllOffers();
+    public Long getHighestOffer();
 }

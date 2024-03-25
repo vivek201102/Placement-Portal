@@ -41,6 +41,16 @@ public class DriveApplicationAdminController {
         }
     }
 
+    @GetMapping("/get-all-applications/{driveId}")
+    public ResponseEntity<?> getAllDriveApplication(@PathVariable int driveId){
+        try {
+            return ResponseEntity.ok(driveApplicationService.getAllDriveApplicationByDrive(driveId));
+        }
+        catch (Exception e){
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
     @GetMapping("/get-pending-application")
     public ResponseEntity<?> getAllPendingApplication(){
         try {

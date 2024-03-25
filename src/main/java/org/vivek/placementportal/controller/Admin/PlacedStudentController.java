@@ -25,4 +25,14 @@ public class PlacedStudentController {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
+
+    @GetMapping("get-placed-students/{driveId}")
+    public ResponseEntity<?> getPlacedStudentByDrive(@PathVariable int driveId){
+        try {
+            return ResponseEntity.ok(placedStudentService.getOffersByCompany(driveId));
+        }
+        catch (Exception e){
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
 }

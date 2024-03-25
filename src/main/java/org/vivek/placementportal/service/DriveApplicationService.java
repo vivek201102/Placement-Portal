@@ -1,5 +1,6 @@
 package org.vivek.placementportal.service;
 
+import org.vivek.placementportal.dto.PlacedStudentResponse;
 import org.vivek.placementportal.dto.RegisterApplicationRequest;
 import org.vivek.placementportal.models.DriveApplication;
 
@@ -11,9 +12,10 @@ public interface DriveApplicationService {
     public DriveApplication delete(int id);
     public List<DriveApplication> getStudentApplication(String studentId);
     public List<DriveApplication> getDriveApplications(int driveId);
+    public List<DriveApplication> getAllDriveApplicationByDrive(int driveId);
     public DriveApplication getStatus(int driveId, String studentId);
     public List<DriveApplication> getPendingApplications();
     public List<DriveApplication> getAll();
     public List<DriveApplication> getStudentPendingApplication(String studentId);
-    public List<DriveApplication> getPendingApplicationsOfPlaced();
+    public List<PlacedStudentResponse> getPendingApplicationsOfPlaced();
 }

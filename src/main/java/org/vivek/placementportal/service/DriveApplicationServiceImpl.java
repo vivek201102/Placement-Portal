@@ -3,14 +3,18 @@ package org.vivek.placementportal.service;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.vivek.placementportal.dto.PlacedStudentResponse;
 import org.vivek.placementportal.dto.RegisterApplicationRequest;
 import org.vivek.placementportal.models.DriveApplication;
+import org.vivek.placementportal.models.PlacedStudent;
 import org.vivek.placementportal.models.PlacementDrive;
 import org.vivek.placementportal.models.Student;
 import org.vivek.placementportal.repository.DriveApplicationRepository;
+import org.vivek.placementportal.repository.PlacedStudentRepository;
 import org.vivek.placementportal.repository.PlacementDriveRepository;
 import org.vivek.placementportal.repository.StudentRepository;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -20,6 +24,7 @@ public class DriveApplicationServiceImpl implements DriveApplicationService {
     private final DriveApplicationRepository driveApplicationRepository;
     private final PlacementDriveRepository placementDriveRepository;
     private final StudentRepository studentRepository;
+    private final PlacedStudentRepository placedStudentRepository;
 
     @Override
     public DriveApplication register(RegisterApplicationRequest request) {
@@ -69,6 +74,11 @@ public class DriveApplicationServiceImpl implements DriveApplicationService {
     }
 
     @Override
+    public List<DriveApplication> getAllDriveApplicationByDrive(int driveId) {
+        return driveApplicationRepository.findAllByPlacementDriveId(driveId);
+    }
+
+    @Override
     public DriveApplication getStatus(int driveId, String studentId) {
         Student student = studentRepository.findByUserId(studentId);
         PlacementDrive placementDrive = placementDriveRepository.findById(driveId).orElseThrow(()-> new UsernameNotFoundException("Placement Drive not found"));
@@ -84,8 +94,19 @@ public class DriveApplicationServiceImpl implements DriveApplicationService {
     }
 
     @Override
-    public List<DriveApplication> getPendingApplicationsOfPlaced() {
-        return driveApplicationRepository.findAllByStudentPlacementStatusAndStatus("PLACED","APPLIED");
+    public List<PlacedStudentResponse> getPendingApplicationsOfPlaced() {
+         List<DriveApplication> driveApplications = driveApplicationRepository.findAllByStudentPlacementStatusAndStatus("PLACED","APPLIED");
+         List<PlacedStudentResponse> placedStudentResponses = new ArrayList<>();
+         for (DriveApplication da: driveApplications){
+             List<PlacedStudent> placedStudents = placedStudentRepository.findAllByStudent(da.getStudent());
+             PlacedStudentResponse placedStudentResponse = PlacedStudentResponse
+                     .builder()
+                     .driveApplication(da)
+                     .placedStudents(placedStudents)
+                     .build();
+             placedStudentResponses.add(placedStudentResponse);
+         }
+        return placedStudentResponses;
     }
 
     @Override

@@ -9,4 +9,6 @@ import java.util.List;
 
 public interface PlacedStudentRepository extends JpaRepository<PlacedStudent, Integer> {
     public List<PlacedStudent> findAllByStudent(Student student);
+    public List<PlacedStudent> findAllByPlacementDriveId(int id);
+    public PlacedStudent findTopByOrderByOfferAmountDesc();
 }
